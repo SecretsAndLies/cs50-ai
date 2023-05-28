@@ -12,32 +12,78 @@ CKnave = Symbol("C is a Knave")
 # Puzzle 0
 # A says "I am both a knight and a knave."
 knowledge0 = And(
-    Or(And(AKnight, AKnave), AKnave)
+    Or(AKnight, AKnave),  # must be either knight or knave
+    Not(And(AKnight, AKnave)),  # cannot be both
+    Implication(AKnight, And(AKnight, AKnave)),
+    Implication(AKnave, And(AKnave, Not(AKnight))),
 )
+
 
 # Puzzle 1
 # A says "We are both knaves."
 # B says nothing.
 knowledge1 = And(
-    Or(And(AKnave, BKnave), And(AKnave, BKnight))
+    Or(AKnight, AKnave),  # must be either knight or knave
+    Not(And(AKnight, AKnave)),  # cannot be both
+
+    Or(BKnight, BKnave),  # must be either knight or knave
+    Not(And(BKnight, BKnave)),  # cannot be both
+
+    Implication(AKnight, And(AKnave, BKnave)),
+    Implication(AKnave, And(AKnave, BKnight))
+
 )
 
 # Puzzle 2
 # A says "We are the same kind."
 # B says "We are of different kinds."
 knowledge2 = And(
-    Or(Or(And(AKnave, BKnave), And(AKnight, BKnight),
-          Or(And(AKnave, BKnight), And(AKnight, BKnave)
-             )))
+    Or(AKnight, AKnave),  # must be either knight or knave
+    Not(And(AKnight, AKnave)),  # cannot be both
+
+    Or(BKnight, BKnave),  # must be either knight or knave
+    Not(And(BKnight, BKnave)),  # cannot be both
+
+    Implication(AKnight, Or(And(AKnight, BKnight), And(AKnave, BKnave))),
+    Implication(AKnave, Or(And(AKnight, BKnave), And(AKnave, BKnight))),
+
+    Implication(BKnight, Or(And(AKnight, BKnave), And(AKnave, BKnight))),
+    Implication(BKnave, Or(And(AKnight, BKnight), And(AKnave, BKnave)))
+
 )
 
 # Puzzle 3
-# A says either "I am a knight." or "I am a knave.", but you don't know which.
-# B says "A said 'I am a knave'."
-# B says "C is a knave."
-# C says "A is a knight."
 knowledge3 = And(
-    # TODO
+    Or(AKnight, AKnave),  # must be either knight or knave
+    Not(And(AKnight, AKnave)),  # cannot be both
+
+    Or(BKnight, BKnave),  # must be either knight or knave
+    Not(And(BKnight, BKnave)),  # cannot be both
+
+    Or(CKnight, CKnave),  # must be either knight or knave
+    Not(And(CKnight, CKnave)),  # cannot be both
+
+    # A says either "I am a knight." or "I am a knave.", but you don't know which.
+    Implication(AKnight, AKnight),
+    Implication(AKnave, AKnight),  # this cannot be true.
+
+    # B says "A said 'I am a knave'."
+    Implication(BKnight,
+                And(
+                    Implication(AKnight, BKnave),
+                    Implication(AKnave, BKnight))
+                ),
+    # not sure how to flip this around... Would it be that he says nothing?
+
+
+    # B says "C is a knave."
+    Implication(BKnight, CKnave),
+    Implication(BKnave, CKnight),
+
+    # C says "A is a knight."
+    Implication(CKnight, AKnight),
+    Implication(CKnave, AKnave),
+
 )
 
 
